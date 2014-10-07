@@ -41,6 +41,7 @@ void InitWindow(int width, int height, bool fullscreen) {
 void CleanUp() {
 SDL_DestroyWindow(window);
 SDL_Quit();
+SDL_GL_DeleteContext(glcontext);
 }
 
 
@@ -118,6 +119,11 @@ int main(int argc, char * arg[]) {
 		return -1;
 	}
 	InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, false);
+
+	//Call our InitOpenGL Function
+	initOpenGL();
+	//Set our viewport
+	setViewport(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	SDL_Event event;
 	while (running)
