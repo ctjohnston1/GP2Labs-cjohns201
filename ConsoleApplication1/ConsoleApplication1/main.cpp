@@ -1,6 +1,7 @@
 //Header files 
 #include <iostream>
 //header for SDL2 functionality
+#include <GL/glew.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <gl\GLU.h>
@@ -10,7 +11,7 @@
 //Global variables go here
 //SDL GL Context
 SDL_GLContext glcontext = NULL;
-
+GLuint triangleVBO;
 //Pointer to our SDL Windows
 SDL_Window * window;
 
@@ -39,6 +40,7 @@ void InitWindow(int width, int height, bool fullscreen) {
 
 
 void CleanUp() {
+glDeleteBuffers(1, &triangleVBO);
 SDL_DestroyWindow(window);
 SDL_Quit();
 SDL_GL_DeleteContext(glcontext);
@@ -73,6 +75,12 @@ void initOpenGL()
 
 	//Turn on best perspective correction
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		std::cout << "Error: " << glewGetErrorString(err) << std::endl;
+	}
 
 }
 
@@ -107,6 +115,20 @@ void setViewport(int width, int height)
 	//Reset using the Indentity Matrix
 	glLoadIdentity();
 
+
+}
+void initGeometry()
+{
+	float triangleData[] = { 0.0f, 1.0f, 0.0f, // Top
+		-1.0f, -1.0f, 0.0f, // Bottom Left
+		1.0f, -1.0f, 0.0f }; //Bottom Right
+	//Create buffer
+	glGenBuffers(1, &triangleVBO);
+	// Make the new VBO active
+	glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+	//Copy Vertex Data to VBO
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleData),
+		triangleData, GL_STATIC_DRAW);
 }
 
 //Function to draw
@@ -117,6 +139,19 @@ void render()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+	//Make the new VBO active. Repeat here as a sanity check( may have changed
+	//since initialisation)
+	glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+	//Establish its 3 coordinates per vertex with zero stride(space between elements) 
+	//in array and contain floating point numbers
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+	//Establish array contains vertices (not normals, colours, texture coords etc)
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+
+
+
 	//Switch to ModelView
 	glMatrixMode(GL_MODELVIEW);
 	//Reset using the Indentity Matrix
@@ -126,11 +161,17 @@ void render()
 	//Begin drawing triangles
 	glBegin(GL_TRIANGLES);
 	glColor3f(1.0f, 0.0f, 0.0f); //Colour of the vertices
+	glVertex3f(0.0f, 1.05, 0.0f); // Top
+	glVertex3f(-1.5f, -1.5f, 0.0f); // Bottom Left
+	glVertex3f(1.5f, -1.5f, 0.0f); // Bottom Right
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(15.0f, 33.0f, 8.0f); //Colour of the vertices
 	glVertex3f(0.0f, 1.0f, 0.0f); // Top
 	glVertex3f(-1.0f, -1.0f, 0.0f); // Bottom Left
 	glVertex3f(1.0f, -1.0f, 0.0f); // Bottom Right
 	glEnd();
-
 	//require to swap the back and front buffer
 	SDL_GL_SwapWindow(window);
 
@@ -146,7 +187,7 @@ void update()
 
 //Main Method - Entry Point 
 int main(int argc, char * arg[]) {
-
+	initGeometry();
 	// init everything - SDL, if it is nonzero we have a problem
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
