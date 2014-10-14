@@ -20,7 +20,9 @@ const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
 bool running = true;
 
-
+float triangleData[] = { 0.0f, 1.0f, 0.0f, // Top
+-1.0f, -1.0f, 0.0f, // Bottom Left
+1.0f, -1.0f, 0.0f }; //Bottom Right
 
 //Global functions 
 void InitWindow(int width, int height, bool fullscreen) {
@@ -151,6 +153,17 @@ void render()
 
 
 
+	//Make the new VBO active. Repeat here as a sanity check( may have changed
+	//since initialisation)
+	glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+	//Establish its 3 coordinates per vertex with zero stride(space between elements) 
+	//in array and contain floating point numbers
+		glVertexPointer(3, GL_FLOAT, 0, NULL);
+	//Establish array contains vertices (not normals, colours, texture coords etc)
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+
+
 
 	//Switch to ModelView
 	glMatrixMode(GL_MODELVIEW);
@@ -172,6 +185,16 @@ void render()
 	glVertex3f(-1.0f, -1.0f, 0.0f); // Bottom Left
 	glVertex3f(1.0f, -1.0f, 0.0f); // Bottom Right
 	glEnd();
+
+	//Swith to ModelView
+	glMatrixMode(GL_MODELVIEW);
+	//Reset using the Indentity Matrix
+	glLoadIdentity();
+	//translate
+	glTranslatef(0.0f, 0.0f, -6.0f);
+	//Actually draw the triangle, giving the number of vertices provided
+	glDrawArrays(GL_TRIANGLES, 0, sizeof(triangleData) / (3 * sizeof(float)));
+
 	//require to swap the back and front buffer
 	SDL_GL_SwapWindow(window);
 
