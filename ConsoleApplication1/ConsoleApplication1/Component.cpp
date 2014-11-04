@@ -1,9 +1,11 @@
-#include "Component.h""
+#include "Component.h"
+#include "GameObject.h"
 
 Component::Component(){
 
 	m_Type = "Component";
 	m_Active = true;
+	m_Parent = NULL;
 
 	
 
@@ -25,4 +27,8 @@ const std::string& Component::getType(){
 
 bool Component::isActive(){
 	return m_Active;
+}
+void Component::setParent(GameObject *object){
+	m_Parent = object;
+
 }

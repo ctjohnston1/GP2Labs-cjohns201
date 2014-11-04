@@ -1,10 +1,15 @@
 #include "GameObject.h"
+#include "Component.h"
 
 
 
-GameObject::GameObject(){}
-
+GameObject::GameObject(){
+	m_Name = "GameObject";
+}
 GameObject::~GameObject(){}
+
+
+
 
 void GameObject::init()
 	{
@@ -13,6 +18,7 @@ void GameObject::init()
 			(*iter)->init();
 		}
 	}
+
 void GameObject::render()
 {
 		for (auto iter = m_Components.begin(); iter != m_Components.end(); iter++)
@@ -20,6 +26,7 @@ void GameObject::render()
 			(*iter)->init();
 		}
 }
+
 void GameObject::update()
 {
 		for (auto iter = m_Components.begin(); iter != m_Components.end(); iter++)
@@ -27,8 +34,6 @@ void GameObject::update()
 			(*iter)->init();
 		}
 }
-
-
 
 void GameObject::destroy()
 {
@@ -48,4 +53,22 @@ void GameObject::destroy()
 			}
 		}
 	m_Components.clear();
+}
+
+
+void GameObject::addComponent(Component* component) {
+
+	component->setParent(this);
+	m_Components.push_back(component);
+
+}
+void GameObject::setName(const std::string& name){
+
+	 m_Name=name;
+
+}
+
+const std::string& GameObject:: getName(){
+
+	return m_Name;
 }

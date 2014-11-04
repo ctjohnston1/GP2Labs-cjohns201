@@ -1,5 +1,6 @@
-#ifndef Component_h
-#define Component_h
+#ifndef GameObject_h
+#define GameObject_h
+
 #include <vector>
 #include <string>
 
@@ -21,10 +22,6 @@ public:
      const std::string& getName();
 	 
 protected:
-	
-	std::string m_Type;
-    void setName();
-
 private:
 
 	std::string m_Name;
